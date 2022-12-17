@@ -1,0 +1,528 @@
+---
+title: "615final"
+author: "Qihan Su"
+date: "2022-12-13"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(base)
+library(data.table)
+
+```
+
+```{r echo=FALSE}
+data_2021_q4 <- read.csv('/Users/suqihan/Desktop/615final/HRTravelTimesQ4_21.csv')
+data_2022_q1 <- read.csv('/Users/suqihan/Desktop/615final/2022-Q1_HRTravelTimes.csv')
+data_2022_q2 <- read.csv('/Users/suqihan/Desktop/615final/2022-Q2_HRTravelTimes.csv')
+data_2022_q3 <- read.csv('/Users/suqihan/Desktop/615final/2022-Q3_HRTravelTimes.csv') 
+
+```
+
+## Abstract
+
+For the Boston subway data from 2021 to 2022, one week of data was selected from each month from October 2021 to September 2022, and three lines from the Red and Blue lines were selected for analysis, from Park Street to Harvard, South Station to Broadway, and Airport to Government center, respectively. Also, I choose No.64 bus to analysis and seperate them into quarters to check it's reliability.
+
+
+
+## Subway
+
+## Explotory Data Analysis
+
+```{r echo = FALSE, fig.height=4, fig.width=12}
+##2021 red &blue from 2021/10/25 - 2021/10/31
+dat21q4_10 <- data_2021_q4[2700021:3509696,]
+dat1 <- subset(dat21q4_10, dat21q4_10$route_id == 'Red')
+dat2 <- subset(dat21q4_10, dat21q4_10$route_id == 'Blue')
+data_21_10 <- rbind(dat1,dat2)
+
+dat_ps_havard1 <- data_21_10 %>% filter(from_stop_id == "70076",to_stop_id == "70068")
+dat_st_bro1 <- data_21_10 %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc1 <- data_21_10 %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+
+ps_ha1 <- dat_ps_havard1 %>% mutate(route = 'ps_ha')
+st_bro1 <- dat_st_bro1 %>% mutate(route = 'st_bro')
+air_gc1 <- dat_air_gc1 %>% mutate(route = 'air_gc')
+
+
+df_w1 <- rbind(ps_ha1, st_bro1 , air_gc1 )
+
+g1 <- ggplot(data=df_w1, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+
+##2021 red&blue from 2021/11/04 - 2021/ 11/10
+dat21q4_11 <- data_2021_q4[3915592:4735814,]
+dat1 <- subset(dat21q4_11, dat21q4_11$route_id == 'Red')
+dat2 <- subset(dat21q4_11, dat21q4_11$route_id == 'Blue')
+data_21_11 <- rbind(dat1,dat2)
+
+dat_ps_havard2 <- data_21_11 %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro2 <- data_21_11 %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc2 <- data_21_11 %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha2 <- dat_ps_havard2 %>% mutate(route = 'ps_ha')
+st_bro2 <- dat_st_bro2 %>% mutate(route = 'st_bro')
+air_gc2 <- dat_air_gc2 %>% mutate(route = 'air_gc')
+
+df_w2 <- rbind(ps_ha2, st_bro2 , air_gc2 )
+
+g2 <- ggplot(data=df_w2, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+grid.arrange(g1, g2, ncol = 2)
+```
+
+The chart for the first week, October 2021, shows that the overall travel time from South Station to Broadway is shorter, but it is shorter on the weekend of October 30 and October 31, when the trains are more on time. It is clear to see that the train from Park Street to Harvard takes the longest and has the most delays. Especially on October 30, the delay is different from other days, which is probably because this weekend is Halloween and there are more trips than other days.
+The chart for the second week, November 2021, shows that it is still South Station to Broadway that has the shorter overall vehicle time. The overall time from the airport to Government Center is very stable. However, on November 4, there was a very large delay from Park Street to Harvard. I also found that the South Station to Broadway bus was out of service on November 6th and 7th.
+
+
+
+```{r echo = FALSE, fig.height=4, fig.width=12}
+##2021 red&blue from 2021/12/04 - 2021/ 12/10
+dat21q4_12 <- data_2021_q4[7431542:8200400,]
+dat1 <- subset(dat21q4_12, dat21q4_12$route_id == 'Red')
+dat2 <- subset(dat21q4_12, dat21q4_12$route_id == 'Blue')
+data_21_12 <- rbind(dat1,dat2)
+
+dat_ps_havard3 <- data_21_12 %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro3 <- data_21_12 %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc3 <- data_21_12 %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha3 <- dat_ps_havard3 %>% mutate(route = 'ps_ha')
+st_bro3 <- dat_st_bro3 %>% mutate(route = 'st_bro')
+air_gc3 <- dat_air_gc3 %>% mutate(route = 'air_gc')
+
+df_w3 <- rbind(ps_ha3, st_bro3 , air_gc3 )
+
+g3 <- ggplot(data=df_w3, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+
+##2022 red&blue from 2022/01/01 - 2022/01/07
+dat22q1_01 <- data_2022_q1[1:844284,]
+dat1 <- subset(dat22q1_01 , dat22q1_01 $route_id == 'Red')
+dat2 <- subset(dat22q1_01 , dat22q1_01 $route_id == 'Blue')
+data_22_01 <- rbind(dat1,dat2)
+
+dat_ps_havard4 <- data_22_01  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro4 <- data_22_01  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc4 <- data_22_01 %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha4 <- dat_ps_havard4 %>% mutate(route = 'ps_ha')
+st_bro4 <- dat_st_bro4 %>% mutate(route = 'st_bro')
+air_gc4 <- dat_air_gc4 %>% mutate(route = 'air_gc')
+
+df_w4 <- rbind(ps_ha4, st_bro4 , air_gc4 )
+
+g4 <- ggplot(data=df_w4, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+grid.arrange(g3, g4, ncol = 2)
+```
+As you can see from the chart of the third week, which is December 2021, the train from South Station to Broadway is closed on the weekend, which is December 4 and 5. The subway from Park st to Harvard had several very serious delays on the 7th and 8th days.
+The graph for January 2022 shows that the trip from the airport to Government Center was more severely delayed on January 3rd, a Monday, and that the overall time spent during the week of January increased compared to the previous month. Also, on January 6, the Parkstreet to Harvard bus experienced very significant delays.
+
+
+
+```{r echo = FALSE, fig.height=4, fig.width=12}
+##2022 red&blue from 2022/02/01 - 2022/02/07
+dat22q1_02 <- data_2022_q1[3504066:4312076,]
+dat1 <- subset(dat22q1_02 , dat22q1_02 $route_id == 'Red')
+dat2 <- subset(dat22q1_02 , dat22q1_02 $route_id == 'Blue')
+data_22_02 <- rbind(dat1,dat2)
+
+dat_ps_havard5 <- data_22_02  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro5 <- data_22_02  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc5 <- data_22_02  %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha5 <- dat_ps_havard5 %>% mutate(route = 'ps_ha')
+st_bro5 <- dat_st_bro5 %>% mutate(route = 'st_bro')
+air_gc5 <- dat_air_gc5 %>% mutate(route = 'air_gc')
+
+df_w5 <- rbind(ps_ha5, st_bro5 , air_gc5 )
+
+g5 <- ggplot(data=df_w5, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+
+
+##2022 red&blue from 2022/03/01 - 2022/03/07
+dat22q1_03 <- data_2022_q1[6812179:7612073,]
+dat1 <- subset(dat22q1_03 , dat22q1_03 $route_id == 'Red')
+dat2 <- subset(dat22q1_03 , dat22q1_03 $route_id == 'Blue')
+data_22_03 <- rbind(dat1,dat2)
+
+dat_ps_havard6 <- data_22_03  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro6 <- data_22_03  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc6 <- data_22_03  %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha6 <- dat_ps_havard6 %>% mutate(route = 'ps_ha')
+st_bro6 <- dat_st_bro6 %>% mutate(route = 'st_bro')
+air_gc6 <- dat_air_gc6 %>% mutate(route = 'air_gc')
+
+df_w6 <- rbind(ps_ha6, st_bro6 , air_gc6 )
+
+g6 <- ggplot(data=df_w6, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+grid.arrange(g5, g6, ncol = 2)
+```
+
+
+From the chart of the fifth week, we can find that on the weekend, that is, February 6th and 7th, there are fewer trips from South Station to Broadway than on other days. Looking at the overall picture, there were no very serious delays on any of the three routes during the week. Moreover, we can find that on the weekend, the trains from the airport to GovernmentCenter are faster than usual.
+Looking at the data for this week in March we can see that on the 1st and 2nd of March, which is Tuesday and Wednesday, there were some serious delays from Parkst to Harvard and the overall time was very long. The Blue Line remained relatively stable, but the South Station to Broadway was out of service on Sunday.
+
+
+```{r fig.height=4, fig.width=12, echo=FALSE}
+##2022 red&blue from 2022/04/01 - 2022/04/07
+dat22q2_04 <- data_2022_q2[1:808587,]
+dat1 <- subset(dat22q2_04  , dat22q2_04  $route_id == 'Red')
+dat2 <- subset(dat22q2_04  , dat22q2_04  $route_id == 'Blue')
+data_22_04 <- rbind(dat1,dat2)
+
+dat_ps_havard7 <- data_22_04  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro7 <- data_22_04  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc7 <- data_22_04  %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha7<- dat_ps_havard7 %>% mutate(route = 'ps_ha')
+st_bro7 <- dat_st_bro7 %>% mutate(route = 'st_bro')
+air_gc7 <- dat_air_gc7 %>% mutate(route = 'air_gc')
+
+df_w7 <- rbind(ps_ha7, st_bro7 , air_gc7 )
+
+g7 <- ggplot(data=df_w7, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+##2022 red&blue from 2022/05/01 - 2022/05/07
+dat22q2_05 <- data_2022_q2[3508933:4298866,]
+dat1 <- subset(dat22q2_05   , dat22q2_05   $route_id == 'Red')
+dat2 <- subset(dat22q2_05   , dat22q2_05   $route_id == 'Blue')
+data_22_05 <- rbind(dat1,dat2)
+
+dat_ps_havard8 <- data_22_05  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro8 <- data_22_05  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc8 <- data_22_05  %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha8<- dat_ps_havard8 %>% mutate(route = 'ps_ha')
+st_bro8 <- dat_st_bro8 %>% mutate(route = 'st_bro')
+air_gc8 <- dat_air_gc8 %>% mutate(route = 'air_gc')
+
+df_w8 <- rbind(ps_ha8, st_bro8 , air_gc8 )
+
+g8 <- ggplot(data=df_w8, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+grid.arrange(g7, g8, ncol = 2)
+```
+As you can see from the April chart, the train from Park st to Harvard was stopped on the day of April 3.
+And from May 1st to May 7th, the train from Park st to Harvard stopped running for a week, so I guess it's possible that the Red Line was out of service for maintenance, resulting in no train for that week.
+
+
+
+
+```{r fig.height=3, fig.width=6, include=FALSE}
+##2022 red&blue from 2022/06/01 - 2022/06/07
+dat22q2_06 <- data_2022_q2[6945116:7728237,]
+dat1 <- subset(dat22q2_06   , dat22q2_06   $route_id == 'Red')
+dat2 <- subset(dat22q2_06   , dat22q2_06   $route_id == 'Blue')
+data_22_06 <- rbind(dat1,dat2)
+
+dat_ps_havard9 <- data_22_06  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro9 <- data_22_06  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc9 <- data_22_06  %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha9<- dat_ps_havard9 %>% mutate(route = 'ps_ha')
+st_bro9 <- dat_st_bro9 %>% mutate(route = 'st_bro')
+air_gc9 <- dat_air_gc9 %>% mutate(route = 'air_gc')
+
+df_w9 <- rbind(ps_ha9, st_bro9 , air_gc9 )
+
+g9 <- ggplot(data=df_w9, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+
+##2022 red&blue from 2022/07/01 - 2022/07/07
+dat22q3_07 <- data_2022_q3[1:686713,]
+dat1 <- subset(dat22q3_07   , dat22q3_07   $route_id == 'Red')
+dat2 <- subset(dat22q3_07   , dat22q3_07   $route_id == 'Blue')
+data_22_07 <- rbind(dat1,dat2)
+
+dat_ps_havard10 <- data_22_07  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro10 <- data_22_07  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc10 <- data_22_07  %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha10 <- dat_ps_havard10 %>% mutate(route = 'ps_ha')
+st_bro10 <- dat_st_bro10 %>% mutate(route = 'st_bro')
+air_gc10 <- dat_air_gc10 %>% mutate(route = 'air_gc')
+
+df_w10 <- rbind(ps_ha10, st_bro10 , air_gc10 )
+
+g10 <- ggplot(data=df_w10, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+grid.arrange(g9, g10, ncol = 2)
+```
+
+
+
+
+
+```{r fig.height=3, fig.width=6, include=FALSE}
+##2022 red&blue from 2022/08/01 - 2022/08/07
+dat22q3_08 <- data_2022_q3[2765692:3415856,]
+dat1 <- subset(dat22q3_08   , dat22q3_08   $route_id == 'Red')
+dat2 <- subset(dat22q3_08   , dat22q3_08   $route_id == 'Blue')
+data_22_08 <- rbind(dat1,dat2)
+
+dat_ps_havard11 <- data_22_08  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro11 <- data_22_08  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc11 <- data_22_08  %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha11 <- dat_ps_havard11 %>% mutate(route = 'ps_ha')
+st_bro11 <- dat_st_bro11 %>% mutate(route = 'st_bro')
+air_gc11 <- dat_air_gc11 %>% mutate(route = 'air_gc')
+
+df_w11 <- rbind(ps_ha11, st_bro11 , air_gc11 )
+
+g11 <- ggplot(data=df_w11, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+
+##2022 red&blue from 2022/09/01 - 2022/09/07
+dat22q3_09 <- data_2022_q3[5219865:5625648,]
+dat1 <- subset(dat22q3_09   , dat22q3_09   $route_id == 'Red')
+dat2 <- subset(dat22q3_09   , dat22q3_09   $route_id == 'Blue')
+data_22_09 <- rbind(dat1,dat2)
+
+dat_ps_havard12 <- data_22_09  %>% filter(from_stop_id == '70076', to_stop_id == '70068')
+dat_st_bro12 <- data_22_09  %>% filter(from_stop_id == '70079', to_stop_id == '70081')
+dat_air_gc12 <- data_22_09  %>% filter(from_stop_id == '70047', to_stop_id == '70039')
+
+ps_ha12 <- dat_ps_havard12 %>% mutate(route = 'ps_ha')
+st_bro12 <- dat_st_bro12 %>% mutate(route = 'st_bro')
+air_gc12 <- dat_air_gc12 %>% mutate(route = 'air_gc')
+
+df_w12 <- rbind(ps_ha12, st_bro12 , air_gc12 )
+
+g12 <- ggplot(data=df_w12, aes(x=service_date, y=travel_time_sec, color=route))+
+  geom_point() + scale_color_brewer(palette = "RdPu")
+
+grid.arrange(g11, g12, ncol = 2)
+```
+
+
+
+
+
+
+
+```{r echo=FALSE}
+##Three pairs of subway stops
+df_ps_ha <- rbind(dat_ps_havard1,dat_ps_havard2,dat_ps_havard3, 
+                  dat_ps_havard4, dat_ps_havard5, dat_ps_havard6, 
+                  dat_ps_havard7, dat_ps_havard8, dat_ps_havard9,
+                  dat_ps_havard10, dat_ps_havard11, dat_ps_havard12)
+
+df_st_bro <- rbind(dat_st_bro1, dat_st_bro2, dat_st_bro3,
+                   dat_st_bro4, dat_st_bro5, dat_st_bro6,
+                   dat_st_bro7, dat_st_bro8, dat_st_bro9,
+                   dat_st_bro10, dat_st_bro11, dat_st_bro12)
+
+df_air_gc <- rbind(dat_air_gc1, dat_air_gc2, dat_air_gc3,
+                   dat_air_gc4, dat_air_gc5, dat_air_gc6,
+                   dat_air_gc7, dat_air_gc8, dat_air_gc9,
+                   dat_air_gc10, dat_air_gc11, dat_air_gc12)
+
+```
+
+
+
+```{r echo=FALSE}
+#ps-ha
+d1 <- mutate(df_ps_ha, from_lat = "42.3564")
+d2 <- mutate(d1, from_lon = "-71.0624")
+d3 <- mutate(d2, to_lat = "42.3734")
+df_ps_ha_new <- mutate(d3, to_lon = "-71.1189")
+
+#st-bw
+d4 <- mutate(df_st_bro, from_lat = "42.3522")
+d5 <- mutate(d4,from_lon = "-71.0552")
+d6 <- mutate(d5, to_lat = "42.3426")
+df_st_bro_new <- mutate(d6, to_lon = "-71.0569")
+
+#air-gov
+d7 <- mutate(df_air_gc, from_lat = "42.3742")
+d8 <- mutate(d7, from_lon = "-71.0303")
+d9 <- mutate(d8, to_lat = "42.3597")
+df_air_gc_new <- mutate(d9, to_lon = "-71.0592")
+```
+
+
+```{r echo=FALSE}
+df_ps_ha_new1 <- mutate(df_ps_ha_new, mean_traveltimes = mean(df_ps_ha_new$travel_time_sec))
+df_st_bro_new1<- mutate(df_st_bro_new, mean_traveltimes = mean(df_st_bro_new$travel_time_sec))
+df_air_gc_new1<- mutate(df_air_gc_new, mean_traveltimes = mean(df_air_gc_new$travel_time_sec))
+```
+
+
+```{r echo=FALSE}
+df_ps_ha_new2 <- mutate(df_ps_ha_new1, fromstop_name = "Park Street", tostop_name = "Harvard")
+df_st_bro_new2 <- mutate(df_st_bro_new1,fromstop_name = "South Station", tostop_name = "Broadway")
+df_air_gc_new2 <- mutate(df_air_gc_new1, fromstop_name = "Airport", tostop_name = "Government Center")
+```
+
+
+
+
+
+```{r echo=FALSE}
+data_subway <- rbind(df_ps_ha_new2,df_st_bro_new2,df_air_gc_new2)
+```
+
+
+```{r echo=FALSE}
+save(data_subway,file='subway.RData')
+fwrite(data_subway,file='subway.csv',sep=",")
+```
+
+
+```{r include=FALSE}
+count(df_ps_ha, from_stop_id)
+count(df_st_bro, from_stop_id)
+count(df_air_gc, from_stop_id)
+```
+
+```{r echo=FALSE}
+ratio <- c(0.36,0.35,0.29 )
+routes <- c("Parkst-Harvard", "SouthStation-Broadway","Airport-GovernmentCenter")
+
+pie(ratio, labels=routes,
+    radius = 1.0,clockwise=T,
+    main = "Number of Trips between three routes ")
+```
+
+The red line from Park st to Harvard has the highest number of trips, the red line from South Station to Broadway has the second highest number of trips, and the blue line from Airport to Government Center has the lowest number of trips.
+
+
+## Bus
+
+```{r include=FALSE}
+data.files<-list.files('bus',pattern='csv$',full=T)
+data.files
+```
+
+```{r include=FALSE}
+dat<-lapply(setNames(,data.files),function(x)
+{
+   fread(x)->inter
+   inter[,fromFile:=x]
+   inter[,day:=mday(service_date)]
+   inter<-inter[day %in% 4:10]
+   inter<-inter[route_id %in% c('64')]
+   
+})
+
+
+rbindlist(dat)->dat
+```
+
+
+```{r include=FALSE}
+fread('stops.txt')->sites
+setNames(sites[,stop_name],sites[,stop_id])->sites.name
+
+dat[,stop_name:=sites.name[as.character(stop_id)]]
+
+```
+
+
+```{r include = FALSE}
+##Calculate the delay time
+delaytimes <- as.numeric(dat$actual - dat$scheduled)
+delay <- delaytimes/60
+delay_mins <- round(delay, 2)
+data <- cbind(dat, delay_mins)
+```
+
+
+
+
+
+```{r include=FALSE}
+save(data,file='Bus.RData')
+fwrite(data,file='Bus.csv',sep=",")
+```
+
+
+
+```{r include=FALSE}
+##Separate into 4 seasons
+data_64_111201 <- data[1:5262]
+data_64_020304 <- data[5263:10539]
+data_64_050607 <- data[10540:15621]
+data_64_080910 <- data[15622:20688]
+```
+
+
+
+
+```{r echo=FALSE}
+##First season from 11-2021 ~ 01-2022
+s1 <- ggplot(data_64_111201,aes(x = service_date, y = delay_mins)) +
+  geom_area(fill = 'sandybrown')
+
+s2 <- ggplot(data_64_020304,aes(x = service_date, y = delay_mins)) +
+  geom_area(fill = 'sandybrown')
+
+s3 <- ggplot(data_64_050607,aes(x = service_date, y = delay_mins)) +
+  geom_area(fill = 'sandybrown') 
+s4 <- ggplot(data_64_080910,aes(x = service_date, y = delay_mins)) +
+  geom_area(fill = 'sandybrown')
+grid.arrange(s1,s2,s3,s4,ncol = 2)
+```
+
+
+The above four charts are divided into four quarters for each of the 12 months, with November, December 21 and January 22 as the first quarter; February, March and April 22 as the second quarter; May, June and July 22 as the third quarter; and August, September and October 22 as the fourth quarter. When delaytime is greater than 0, it represents the time of vehicle delay. From the graph, it is more obvious that the 64 buses have less delays in winter and spring than in summer instead. I guessed that this situation might be caused by fewer trips in winter, so I made another pie chart to see how many trips were made in the four quarters. The pie chart shows that the number of trips is more evenly distributed over the four quarters. So the 64 is indeed more reliable in winter than in summer.
+
+
+
+```{r include=FALSE}
+count(data_64_111201, half_trip_id)
+count(data_64_020304, half_trip_id)
+count(data_64_050607, half_trip_id)
+count(data_64_080910, half_trip_id)
+
+```
+
+```{r echo=FALSE}
+ratio <- c(0.25,0.26,0.25,0.24 )
+Seasons <- c("Nov-Dec-Jan", "Feb-Mar-Apr","May-Jun-Jul", "Aug-Sep-Oct")
+
+r1 <-pie(ratio, labels=Seasons,
+    radius = 1.0,clockwise=T,
+    main = "Number of Trips between four Seasons ")
+
+
+```
+
+## Result
+
+From the above charts, it's interesting to know that, the red line stops from Park st to Harvard delays the most and cost the highest time, for the red line stops from South Station to Broadway always canceled at weekends, for the Blue line which from Airport to Government Center is the most stable line.
+For No.64 bus, as we can see that the bus is much more reliable in winter than in summer. And it's can be known from the pie chart that this has nothing to do with numbers of bus. It's can be concluded that No.64 bus doesn't affect by the weather and temperature condition.
+
+
+
+
+
